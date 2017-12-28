@@ -1,0 +1,29 @@
+{
+  "name": "speech-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "debug": "^3.1.0",
+    "material-ui": "^0.20.0",
+    "ml-regression": "^4.4.2",
+    "mousetrap": "^1.6.1",
+    "prop-types": "^15.6.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.0.17",
+    "react-transition-group": "^2.2.1",
+    "recharts": "^1.0.0-beta.7",
+    "regression": "^2.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "description": "For viewing features of collected speech sample data",
+  "main": "index.js",
+  "author": "Ryan White",
+  "license": "UNLICENSED"
+}
