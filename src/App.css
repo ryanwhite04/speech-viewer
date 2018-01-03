@@ -27,7 +27,11 @@
   margin: auto;
 }
 
-.Speaker, .Sentence {
+.ListItem {
+  width: 240px;
+}
+
+pre {
   padding: 48px;
   margin: auto;
   text-align: left;

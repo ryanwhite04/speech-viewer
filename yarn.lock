@@ -4339,7 +4339,13 @@ ml-kernel@^2.0.0:
     ml-kernel-sigmoid "^1.0.0"
     ml-matrix "^5.0.0"
 
-ml-matrix@^5.0.0:
+ml-logistic-regression@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/ml-logistic-regression/-/ml-logistic-regression-1.0.2.tgz#035a3d83329fea82236faaf19fe8ce3aca1566d9"
+  dependencies:
+    ml-matrix "^5.0.0"
+
+ml-matrix@^5.0.0, ml-matrix@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/ml-matrix/-/ml-matrix-5.0.1.tgz#2cb1f20b33ed8a0475dadd68ca7a6f7da5c5482c"
   dependencies:

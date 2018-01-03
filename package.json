@@ -5,6 +5,8 @@
   "dependencies": {
     "debug": "^3.1.0",
     "material-ui": "^0.20.0",
+    "ml-logistic-regression": "^1.0.2",
+    "ml-matrix": "^5.0.1",
     "ml-regression": "^4.4.2",
     "mousetrap": "^1.6.1",
     "prop-types": "^15.6.0",
