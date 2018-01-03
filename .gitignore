@@ -61,3 +61,6 @@ typings/
 **/praat
 **/mp3
 index.json
+
+build/
+src/packed.js
