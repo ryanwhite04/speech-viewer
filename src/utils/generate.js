@@ -1,24 +1,22 @@
-const log = require('debug')('generator');
-const speakers = require('speech-samples/index.json');
-const regress = require(process.env.NODE_ENV === 'production' ? './packed' : './regress');
+import debug from 'debug'
+import regress from './regress'
 
-module.exports = (order = 3) => (speaker = 0, sentence = 0) => {
+export default options => ({ tags, frames }) => {
 
-  log('generate', { order, speaker, sentence })
-
-  const { sentences, ...rest } = speakers[speaker];
-  const { tags, frames } = sentences[sentence];
-
+  const log = debug('generate')
   const contour = frames.map(format).reduce(clean(4), [])
   const syllables = tags
     .reduce(outline(contour), [])
     .filter(({ x }) => x)
-    .filter(({ x: [start, end] }) => start && end && end - start > 1)
-    .map(regress(contour, order))
+    .filter(({ x: [start, end] }) => start && end && end - start > 3)
+    .map(regress(contour, options))
   
-  log('generate', { contour, syllables })
+  log(options, {
+    tags: [tags.length, syllables.length],
+    frames: [frames.length, contour.length],
+  })
 
-  return { speaker: rest, contour, syllables }
+  return { contour, syllables }
 }
 
 function format(frequency, name) {

@@ -2,7 +2,8 @@
   "presets": [["env", {
     "targets": {
       "chrome": 55,
-      "uglify": true
+      "uglify": true,
+      "node": "current"
     },
     "useBuiltIns": true,
     "modules": false

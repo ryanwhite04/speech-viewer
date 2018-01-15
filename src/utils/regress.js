@@ -1,6 +1,14 @@
-import PolynomialRegression from 'ml-regression-polynomial';
+import debug from 'debug'
+import PolynomialRegression from 'ml-regression-robust-polynomial'
+import RobustPolynomialRegression from 'ml-regression-robust-polynomial' // https://link.springer.com/article/10.1007%2FBF00127126                        
+import ExponentialRegression from 'ml-regression-exponential'
 
-export default function regress(data, order) {
+export default function(data, {
+  type = 'robust', //  or polynomial or exponential
+  order = 3,
+}) {
+
+  const log = debug('regress')
   // This regression isn't for prediction,
   // It's just to get meaningful variables from each contour
   // I can put the coefficients into the actual ML later
@@ -21,10 +29,13 @@ export default function regress(data, order) {
     return x => (x - min) / (max - min)
   }
 
-  return (syllable, key) => {
+  return syllable => {
 
     const { x: [start, end] } = syllable
 
+    if (end - start < 3) {
+      log('error', start, end)
+    }
     let y = data.slice(start, end)
       .map(({ frequency }) => frequency)
       .filter(frequency => frequency)
@@ -33,15 +44,18 @@ export default function regress(data, order) {
 
     // Make new x values in case 0 frequencies were removed
     // Scaled to values between 0 and 1
+
     const x = [...new Array(y.length).keys()].map(x => x / y.length)
     
-    // This is where the magic happens.
-    // 3rd order seems to work well,
-
-    const { coefficients } = new PolynomialRegression(x, y, order)
+    const { coefficients, A, B } = new {
+      polynomial: PolynomialRegression,
+      robust: RobustPolynomialRegression, 
+      exponential: ExponentialRegression,
+    }[type](x, y, order)
 
     return Object.assign(syllable, {
-      coefficients: coefficients.map(coefficient => round(coefficient, 3))
+      coefficients, A, B,
+      // coefficients: coefficients.map(coefficient => round(coefficient, 3)),
     })
   }
 }
