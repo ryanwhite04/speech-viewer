@@ -1,7 +1,12 @@
-import debug from 'debug'
-import regress from './regress'
+const debug = require('debug');
+const regress = require('./regress');
 
-export default options => ({ tags, frames }) => {
+if (require.main === module) {
+  // The file is being executed directly (not with require)
+  console.log('generate being called without require');
+}
+
+module.exports = options => ({ tags, frames }) => {
 
   const log = debug('generate')
   const contour = frames.map(format).reduce(clean(4), [])

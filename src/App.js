@@ -24,38 +24,39 @@ import {
   TableRowColumn,
 } from 'material-ui/Table'
 import { List, ListItem } from 'material-ui/List'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
+// import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import {
-  red500,
+  // red500,
   // green500,
-  cyan500,
-  green500,
+  // cyan500,
+  // green500,
 } from 'material-ui/styles/colors'
 import AppBar from 'material-ui/AppBar'
-import SnackBar from 'material-ui/Snackbar'
-import Paper from 'material-ui/Paper'
+// import SnackBar from 'material-ui/Snackbar'
+// import Paper from 'material-ui/Paper'
 // import Dialog from 'material-ui/Dialog';
 // import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton'
 import SvgIcon from 'material-ui/SvgIcon'
-import FloatingActionButton from 'material-ui/FloatingActionButton'
-import FileFileDownload from 'material-ui/svg-icons/file/file-download'
-import ContentClear from 'material-ui/svg-icons/content/clear'
-import ContentAdd from 'material-ui/svg-icons/content/add'
-import ActionHelp from 'material-ui/svg-icons/action/help'
-import ActionLock from 'material-ui/svg-icons/action/lock'
-import AvMic from 'material-ui/svg-icons/av/mic'
-import AvMicOff from 'material-ui/svg-icons/av/mic-off'
-import ImageNavigateBefore from 'material-ui/svg-icons/image/navigate-before'
-import ImageNavigateNext from 'material-ui/svg-icons/image/navigate-next'
+// import FloatingActionButton from 'material-ui/FloatingActionButton'
+// import FileFileDownload from 'material-ui/svg-icons/file/file-download'
+// import ContentClear from 'material-ui/svg-icons/content/clear'
+// import ContentAdd from 'material-ui/svg-icons/content/add'
+// import ActionHelp from 'material-ui/svg-icons/action/help'
+// import ActionLock from 'material-ui/svg-icons/action/lock'
+// import AvMic from 'material-ui/svg-icons/av/mic'
+// import AvMicOff from 'material-ui/svg-icons/av/mic-off'
+// import ImageNavigateBefore from 'material-ui/svg-icons/image/navigate-before'
+// import ImageNavigateNext from 'material-ui/svg-icons/image/navigate-next'
 import { Card,
   CardActions,
-  CardHeader,
+  // CardHeader,
   CardMedia,
   CardTitle,
-  CardText
+  // CardText
 } from 'material-ui/Card'
 import TextField from 'material-ui/TextField'
+import Plot from 'react-plotly.js'
 
 export default class App extends Component {
 
@@ -77,7 +78,17 @@ export default class App extends Component {
 
     const { width, height, domain, key, tone, speaker, sentence, regression } = this.state
     const { sentences, ...rest } = speakers[speaker];
+
+    console.log(generate);
     const { syllables, contour, model } = generate(regression)(sentences[sentence]);
+    
+    const data = [
+      { color: "rgb(127, 127, 127)" },
+      { color: "rgb(0, 127, 0)" },
+      { color: "rgb(0, 0, 127)" },
+      { color: "rgb(127, 0, 0)" },
+      { color: "rgb(0, 0, 0)" }
+    ].map(unpack(syllables))
     const log = debug('App')
 
     const filtered = syllables.filter(tone ? ({ tone: t }) => tone === t : () => true)
@@ -85,7 +96,7 @@ export default class App extends Component {
 
     const onChange = ({ target: { name } }, v) => {
       console.log('onChange', { [name]: v })
-      this.setState({ [name]: v })
+      this.setState({ [name]: parseInt(v, 10) })
     }
     const actions = [
       {
@@ -113,7 +124,7 @@ export default class App extends Component {
         min: "360",
         max: "3000",
         value: width,
-        onChange, 
+        onChange,
       },
       {
         key: 'start',
@@ -169,6 +180,16 @@ export default class App extends Component {
             }, true)}</TableHeader>
             <TableBody>{filtered.sort(sortBy(key)).map((data, key) => row(data, false))}</TableBody>
           </Table>
+        </CardMedia>
+      </Card>
+      <Card className="Chart">
+        <CardMedia className="Graph">
+          <Plot
+            data={data}
+            layout={{
+              title: "A Fancy Plot"
+            }}
+          />
         </CardMedia>
       </Card>
     </div></MuiThemeProvider>
@@ -262,4 +283,37 @@ function area({ tone, name, x, min, max }) {
     strokeOpacity: 0.3,
   }}><Label position="bottom">{tone}</Label></ReferenceArea>
 }
-          
+
+function unpack(syllables) {
+  return (marker = {}, i = 0) => {
+    const filtered = syllables.filter(({ tone }) => parseInt(tone, 10) === i);
+
+    console.log(i, filtered);
+
+    const reduced = filtered.reduce(
+      ({ x, y, z }, { coefficients: [a, b, c] }) => ({
+        x: [...x, a],
+        y: [...y, b],
+        z: [...z, c]
+      }),
+      { x: [], y: [], z: [] }
+    );
+
+    console.log(i, reduced);
+
+    return {
+      type: "scatter3d",
+      mode: "markers",
+      marker: {
+        size: 12,
+        line: {
+          color: "rgba(217, 217, 217, 0.14)",
+          width: 0.5
+        },
+        opacity: 0.8,
+        ...marker
+      },
+      ...reduced
+    };
+  };
+}

@@ -1,9 +1,9 @@
-import debug from 'debug'
-import PolynomialRegression from 'ml-regression-robust-polynomial'
-import RobustPolynomialRegression from 'ml-regression-robust-polynomial' // https://link.springer.com/article/10.1007%2FBF00127126                        
-import ExponentialRegression from 'ml-regression-exponential'
+const debug = require('debug')
+const PolynomialRegression = require('ml-regression-robust-polynomial')
+const RobustPolynomialRegression = require('ml-regression-robust-polynomial') // https://link.springer.com/article/10.1007%2FBF00127126
+const ExponentialRegression = require('ml-regression-exponential')
 
-export default function(data, {
+module.exports = function(data, {
   type = 'robust', //  or polynomial or exponential
   order = 3,
 }) {
@@ -13,12 +13,12 @@ export default function(data, {
   // It's just to get meaningful variables from each contour
   // I can put the coefficients into the actual ML later
 
-  function round(number, precision) {
-    var factor = Math.pow(10, precision);
-    var tempNumber = number * factor;
-    var roundedTempNumber = Math.round(tempNumber);
-    return roundedTempNumber / factor;
-  }
+  // function round(number, precision) {
+  //   var factor = Math.pow(10, precision);
+  //   var tempNumber = number * factor;
+  //   var roundedTempNumber = Math.round(tempNumber);
+  //   return roundedTempNumber / factor;
+  // }
 
   function normalize(min, max) {
 
@@ -47,11 +47,13 @@ export default function(data, {
 
     const x = [...new Array(y.length).keys()].map(x => x / y.length)
     
-    const { coefficients, A, B } = new {
+    let regressor = {
       polynomial: PolynomialRegression,
-      robust: RobustPolynomialRegression, 
+      robust: RobustPolynomialRegression,
       exponential: ExponentialRegression,
-    }[type](x, y, order)
+    }[type]
+    regressor = regressor.default ? regressor.default : regressor;
+    const { coefficients, A, B } = new regressor(x, y, order)
 
     return Object.assign(syllable, {
       coefficients, A, B,
