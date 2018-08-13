@@ -58,6 +58,7 @@ import { Card,
 import TextField from 'material-ui/TextField'
 import Plot from 'react-plotly.js'
 
+
 export default class App extends Component {
 
   state = {
@@ -76,10 +77,14 @@ export default class App extends Component {
 
   render() {
 
+    const log = debug('app');
     const { width, height, domain, key, tone, speaker, sentence, regression } = this.state
+    
+    log({ speaker, speakers })
+   
     const { sentences, ...rest } = speakers[speaker];
 
-    console.log(generate);
+    // console.log(generate);
     const { syllables, contour, model } = generate(regression)(sentences[sentence]);
     
     const data = [
@@ -89,7 +94,6 @@ export default class App extends Component {
       { color: "rgb(127, 0, 0)" },
       { color: "rgb(0, 0, 0)" }
     ].map(unpack(syllables))
-    const log = debug('App')
 
     const filtered = syllables.filter(tone ? ({ tone: t }) => tone === t : () => true)
     log('render', this.state, rest, syllables, filtered, model)
